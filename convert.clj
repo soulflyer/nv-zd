@@ -21,5 +21,7 @@
       date-code (creation-date incoming-file)
       old-name (.toString (fs/real-path incoming-file))
       new-name (str parent "/" date-code  " " basename ".org")]
-  (fs/copy old-name new-name)
-  (println "Wrote " new-name))
+  (if (= "txt" ext)
+    (do (fs/copy old-name new-name)
+        (println "Wrote " new-name))
+    (println "Not a txt file")))
