@@ -2,19 +2,8 @@
 
 (require '[babashka.fs :as fs])
 
-(def now (java.time.ZonedDateTime/now))
 (def local-timezone (java.time.ZoneId/of "Asia/Saigon"))
 (def pattern (java.time.format.DateTimeFormatter/ofPattern "yyMMddHHmm"))
-
-
-(def create-time
-  (.withZoneSameInstant
-    now
-    ;; (fs/file-time->instant
-    ;;   (fs/creation-time "./test.txt"))
-    local-timezone))
-
-;;(fs/file-time->instant (fs/creation-time "./test.txt"))
 
 (defn creation-date [file-name]
   (.format
@@ -27,11 +16,10 @@
       filename (fs/file-name incoming-file)
       parent (.toString (fs/real-path (fs/parent incoming-file)))
       split (fs/split-ext incoming-file)
-      ;;    ext (fs/extension incoming-file)
       ext (second split)
-      basename (fs/file-name (first split))]
-
-  (println parent)
-  (println basename)
-  (println ext)
-  (println (creation-date incoming-file)))
+      basename (fs/file-name (first split))
+      date-code (creation-date incoming-file)
+      old-name (.toString (fs/real-path incoming-file))
+      new-name (str parent "/" date-code  " " basename ".org")]
+  (fs/copy old-name new-name)
+  (println "Wrote " new-name))
