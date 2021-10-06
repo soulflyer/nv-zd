@@ -12,9 +12,13 @@
       local-timezone)
     pattern))
 
+;; TODO re-write or wrap in elisp instead of clojure so I don't need to locate the file,
+;; I can just run it directly from the deft buffer or the note itself.
 (let [incoming-file (first *command-line-args*)
-      filename (fs/file-name incoming-file)
-      parent (.toString (fs/real-path (fs/parent incoming-file)))
+      path-length (count (fs/components incoming-file))
+      parent (.toString (fs/real-path (if (= 1 path-length)
+                                        "."
+                                        (fs/parent incoming-file))))
       split (fs/split-ext incoming-file)
       ext (second split)
       basename (fs/file-name (first split))
