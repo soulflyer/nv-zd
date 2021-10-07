@@ -14,6 +14,7 @@
 
 ;; TODO re-write or wrap in elisp instead of clojure so I don't need to locate the file,
 ;; I can just run it directly from the deft buffer or the note itself.
+
 (let [incoming-file (first *command-line-args*)
       path-length (count (fs/components incoming-file))
       parent (.toString (fs/real-path (if (= 1 path-length)
@@ -27,9 +28,11 @@
       old-name (.toString (fs/real-path incoming-file))
       new-name (str parent "/" date-code  " " basename ".org")]
   (if (= "txt" ext)
-    (do (fs/copy old-name new-name)
-        (when-not (fs/exists? backup-dir)
-          (fs/create-dir backup-dir))
-        (fs/move old-name backup-dir)
-        (println "Wrote " new-name))
+    (do
+      (spit new-name (str "#+TITLE: " basename "\n# TAGS\n\n"))
+      (spit new-name (slurp old-name) :append true)
+      (when-not (fs/exists? backup-dir)
+        (fs/create-dir backup-dir))
+      (fs/move old-name backup-dir)
+      (println "Wrote " new-name))
     (println "Not a txt file")))
