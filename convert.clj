@@ -26,13 +26,14 @@
       date-code (creation-date incoming-file)
       backup-dir (str parent "/old-notes/")
       old-name (.toString (fs/real-path incoming-file))
-      new-name (str parent "/" date-code  " " basename ".org")]
+      new-name (str date-code " " basename ".org")
+      new-path (str parent "/" new-name)]
   (if (= "txt" ext)
     (do
-      (spit new-name (str "#+TITLE: " basename "\n# TAGS\n\n"))
-      (spit new-name (slurp old-name) :append true)
+      (spit new-path (str "#+TITLE: " basename "\n# TAGS\n\n"))
+      (spit new-path (slurp old-name) :append true)
       (when-not (fs/exists? backup-dir)
         (fs/create-dir backup-dir))
       (fs/move old-name backup-dir)
-      (println "Wrote " new-name))
+      (print new-name))
     (println "Not a txt file")))
